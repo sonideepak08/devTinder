@@ -1,25 +1,32 @@
 const express = require('express');
-const authAdmin = require('../middleware/auth');
+const connectDB = require('./config/database');
+const User = require('./models/user');
+
 const app = express();
 
-app.use('/admin', authAdmin);
-
-app.get('/user', (req, res, next) => {
-    console.log('callling /user API');
-    res.send('user data fetched!')
+app.get('/', (req, res) => {
+    res.send('successful');
 })
 
-app.get('/admin/getData', (req, res, next) => {
-    console.log('callling /admin/getData API');
-    // next();
-    res.send('data fetched successfully');
+app.post('/signup', async (req, res) => {
+    const user = new User({
+        firstName: 'Deepak',
+        lastName: 'Soni',
+        email: 'deepak@soni.com',
+        password: 'deepak@123'
+    })
+
+    await user.save();
+    res.send('request successfull');
 })
 
-app.get('/admin/deleteData', (req, res, next) => {
-    console.log('callling /admin/deleteData API');
-    res.send('data deleted successfully');
+connectDB().then(() => {
+    console.log('connection successfully established!!!');
+    app.listen(3000, () => {
+        console.log('server is listening at port 3000');
+    })
+}).catch((err) => {
+    console.error('connection unsuccessful', err.message);
 })
 
-app.listen(3000, () => {
-    console.log('server is listening at port 3000');
-})
+
