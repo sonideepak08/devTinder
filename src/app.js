@@ -57,7 +57,7 @@ app.post('/signup', async (req, res) => {
         await user.save();
         res.status(200).send('user added successfully');
     } catch (error) {
-        res.status(400).send('adding user request failed.');
+        res.status(400).send('adding user request failed.'+ error.message);
     }
 })
 
@@ -77,10 +77,21 @@ app.patch("/update", async (req, res) => {
     const userId = req.body.userId;
     const body = req.body;
     try {
-        await User.findByIdAndUpdate(userId, body)
+        const ALLOWED_UPDATES = ['userId', 'age', 'gender', 'skills', 'pictureUrl', 'email'];
+        const isUpdateAllowed = Object.keys(body).every((k) => ALLOWED_UPDATES.includes(k));
+        if (!isUpdateAllowed) {
+            throw new Error('update not allowed');
+        }
+        if (body?.skills && body?.skills.length > 10) {
+            throw new Error('skills cannot exceeds more than 10');
+        }
+        await User.findByIdAndUpdate(userId, body,{
+            runValidators: true
+        }
+        )
         res.status(200).send("User updated successfully");
     } catch (error) {
-        res.status(400).send('something went wrong!!');
+        res.status(400).send('something went wrong ' + error.message);
     }
 })
 
