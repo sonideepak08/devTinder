@@ -5,10 +5,10 @@ const User = require('../models/user');
 const { validateSignUp } = require('../utils/validation');
 const { userAuth } = require('../middleware/auth');
 
-const userRoute = express.Router();
+const authRoute = express.Router();
 
 //POST register a user
-userRoute.post('/signup', async (req, res) => {
+authRoute.post('/signup', async (req, res) => {
     try {
         //validation
         validateSignUp(req);
@@ -25,15 +25,18 @@ userRoute.post('/signup', async (req, res) => {
             password: passwordHashed
         });
 
-        await user.save();
-        res.status(200).send('user added successfully');
+        const savedUser = await user.save();
+        res.status(200).json({
+            message: 'user added successfully',
+            data: savedUser
+        });
     } catch (error) {
         res.status(400).send('adding user request failed.' + error.message);
     }
 })
 
 //POST login
-userRoute.post('/login', async (req, res) => {
+authRoute.post('/login', async (req, res) => {
     try {
         const { email, password } = req.body;
         const user = await User.findOne({ email });
@@ -59,10 +62,10 @@ userRoute.post('/login', async (req, res) => {
 
 // POST logout
 // userAuth miidleware is optional
-userRoute.post("/logout", userAuth, (req, res) => {
+authRoute.post("/logout", userAuth, (req, res) => {
     res.clearCookie('token', {
         httpOnly: true
     });
     res.status(200).send('user logged out!');
 })
-module.exports = userRoute;
+module.exports = authRoute;
