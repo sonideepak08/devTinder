@@ -38,7 +38,7 @@ userRoute.get("/user/connections", userAuth, async (req, res) => {
             .populate("toUserId", USER_SAFE_DATA);
 
         const data = connectionResponse.map((resp) => {
-            if (loggedInUser._id.toString() === resp?.fromUserId.toString()) {
+            if (loggedInUser._id.toString() === resp?.fromUserId._id.toString()) {
                 return resp?.toUserId;
             }
             return resp?.fromUserId;

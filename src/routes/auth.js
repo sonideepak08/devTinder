@@ -26,6 +26,11 @@ authRoute.post("/signup", async (req, res) => {
     });
 
     const savedUser = await user.save();
+    const jwtToken = await savedUser.getJWT();
+    res.cookie("token", jwtToken, {
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days || expires: new Date(Date.now() + 604800000)
+      httpOnly: true,
+    });
     res.status(200).json({
       message: "user added successfully",
       data: savedUser,
