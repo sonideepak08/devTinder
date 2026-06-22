@@ -8,6 +8,9 @@ const profileAuth = require("./routes/profile");
 const requestAuth = require("./routes/request");
 const userRoute = require("./routes/user");
 const cors = require("cors");
+const paymentRouter = require("./routes/payment");
+
+require("./utils/cronjobs");
 
 const app = express();
 
@@ -24,6 +27,7 @@ app.use("/", authRoute);
 app.use("/", profileAuth);
 app.use("/", requestAuth);
 app.use("/", userRoute);
+app.use("/", paymentRouter);
 
 connectDB()
   .then(() => {
