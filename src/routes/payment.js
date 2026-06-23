@@ -5,6 +5,7 @@ const paymentRouter = express.Router();
 const paymentInstance = require("../utils/razorpay");
 const Payment = require("../models/payment");
 const Razorpay = require("razorpay");
+const { membershipAmount } = require("../utils/constants");
 
 paymentRouter.post("/payment/create", userAuth, async (req, res) => {
   try {
@@ -12,10 +13,7 @@ paymentRouter.post("/payment/create", userAuth, async (req, res) => {
     const { firstName, lastName, email } = req.user;
 
     const order = await paymentInstance.orders.create({
-      amount:
-        membershipType === "Silver"
-          ? Number(process.env.SILVER_MEMBERSHIP_AMOUNT * 100)
-          : Number(process.env.GOLD_MEMBERSHIP_AMOUNT * 100),
+      amount: membershipAmount[membershipType] * 100,
       currency: "INR",
       receipt: "receipt#1",
       notes: {
