@@ -9,6 +9,9 @@ const requestAuth = require("./routes/request");
 const userRoute = require("./routes/user");
 const cors = require("cors");
 const paymentRouter = require("./routes/payment");
+const http = require("http");
+const initializeSocket = require("./utils/socket");
+const chatRouter = require("./routes/chat");
 
 require("./utils/cronjobs");
 
@@ -28,11 +31,15 @@ app.use("/", profileAuth);
 app.use("/", requestAuth);
 app.use("/", userRoute);
 app.use("/", paymentRouter);
+app.use("/", chatRouter);
+
+const server = http.createServer(app);
+initializeSocket(server);
 
 connectDB()
   .then(() => {
     console.log("connection successfully established!!!");
-    app.listen(process.env.PORT, () => {
+    server.listen(process.env.PORT, () => {
       console.log("server is listening at port 3000");
     });
   })
